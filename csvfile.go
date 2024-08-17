@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,6 +41,9 @@ func (c csvFile) Read() error {
 	if c.Options.Separator != "" {
 		options = append(options, fmt.Sprintf("delim='%s'", c.Options.Separator))
 	}
+	if c.Options.SampleSize > 0 {
+		options = append(options, fmt.Sprintf("sample_size=%d", c.Options.SampleSize))
+	}
 	stmt := fmt.Sprintf("CREATE TABLE %s AS FROM read_csv('%s', %s)",
 		c.tableName,
 		c.FileName,
@@ -69,4 +73,42 @@ func (c *csvFile) SetFileName(parts ...string) error {
 	// Get filename without extensions as the table name
 	c.tableName = strings.Split(filepath.Base(fileName), ".")[0]
 	return nil
+}
+
+// func (cf csvFile) query(stmt string) ([][]interface{}, error) {
+
+// 	rows, err := cf.database.Query(stmt)
+// 	if err != nil {
+// 		return nil, errors.New("error: query execution failed")
+// 	}
+// 	defer rows.Close()
+
+// 	// Get the column names
+// 	columns, err := rows.Columns()
+// 	if err != nil {
+// 		return nil, errors.New("error: column names could not be determined")
+// 	}
+
+// 	// Create a slice to store the results
+// 	var results [][]interface{}
+
+// 	// Iterate over the rows and append the values to the results slice
+// 	for rows.Next() {
+// 		values := make([]interface{}, len(columns))
+// 		valuePtrs := make([]interface{}, len(columns))
+// 		for i := range columns {
+// 			valuePtrs[i] = &values[i]
+// 		}
+// 		err := rows.Scan(valuePtrs...)
+// 		if err != nil {
+// 			return nil, errors.New("error: rows could not be read")
+// 		}
+// 		results = append(results, values)
+// 	}
+// 	return results, nil
+// }
+
+func round(val float64, precision int) float64 {
+	p := math.Pow10(precision)
+	return math.Round(val*p) / p
 }
