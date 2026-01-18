@@ -19,7 +19,7 @@ type Options struct {
 ```
 
 ```
-type csvFile struct {
+type CsvFile struct {
 	Options   Options
 	FileName  string
 	database  *sql.DB
@@ -76,7 +76,7 @@ csv.SetFileName(".", "data", "file.csv")
 ...
 ```
 
-The returned `csv` is of type `csvFile` (struct). The following methods are associated with this type:
+The returned `csv` is of type `CsvFile` (struct). The following methods are associated with this type:
 
 **Settings**
 

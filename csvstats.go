@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (cf csvFile) ColumnStats() ([]ColumnStats, error) {
+func (cf CsvFile) ColumnStats() ([]ColumnStats, error) {
 	stmt := fmt.Sprintf("SUMMARIZE %s", cf.tableName)
 
 	rows, err := cf.database.Query(stmt)
@@ -51,7 +51,7 @@ func (cf csvFile) ColumnStats() ([]ColumnStats, error) {
 	return columnStats, nil
 }
 
-func (cf csvFile) getStat(stmt string) (float64, error) {
+func (cf CsvFile) getStat(stmt string) (float64, error) {
 	var result float64
 
 	row := cf.database.QueryRow(stmt)
@@ -61,38 +61,53 @@ func (cf csvFile) getStat(stmt string) (float64, error) {
 		}
 		return 0.0, errors.New("error: not a numerical column")
 	}
-	return round(result,2), nil
+	return round(result, 2), nil
 }
 
-func (cf csvFile) Mean(column string) (float64, error) {
+func (cf CsvFile) Mean(column string) (float64, error) {
 
 	stmt := fmt.Sprintf("SELECT avg(%s) AS RESULT FROM %s", column, cf.tableName)
 	return cf.getStat(stmt)
 }
 
-func (cf csvFile) Median(column string) (float64, error) {
+func (cf CsvFile) Median(column string) (float64, error) {
 
 	stmt := fmt.Sprintf("SELECT quantile(%s, 0.5) AS RESULT FROM %s", column, cf.tableName)
 	return cf.getStat(stmt)
 }
 
-func (cf csvFile) Sum(column string) (float64, error) {
+func (cf CsvFile) Sum(column string) (float64, error) {
 	stmt := fmt.Sprintf("SELECT sum(%s) AS RESULT FROM %s", column, cf.tableName)
 	return cf.getStat(stmt)
 }
 
-func (cf csvFile) Min(column string) (float64, error) {
+func (cf CsvFile) Min(column string) (float64, error) {
 	stmt := fmt.Sprintf("SELECT min(%s) AS RESULT FROM %s", column, cf.tableName)
 	return cf.getStat(stmt)
 }
 
-func (cf csvFile) Max(column string) (float64, error) {
+func (cf CsvFile) Max(column string) (float64, error) {
 	stmt := fmt.Sprintf("SELECT max(%s) AS RESULT FROM %s", column, cf.tableName)
 	return cf.getStat(stmt)
 }
 
-func (cf csvFile) NullCount(column string) (int64, error) {
+func (cf CsvFile) NullCount(column string) (int64, error) {
 	stmt := fmt.Sprintf("SELECT COUNT(*) - COUNT(%s) AS RESULT FROM %s", column, cf.tableName)
 	result, err := cf.getStat(stmt)
 	return int64(result), err
+}
+
+func (cf CsvFile) StandardDev(column string) (float64, error) {
+	stmt := fmt.Sprintf("SELECT stddev(%s) AS RESULT FROM %s", column, cf.tableName)
+	return cf.getStat(stmt)
+}
+
+func (cf CsvFile) Variance(column string) (float64, error) {
+	stmt := fmt.Sprintf("SELECT variance(%s) AS RESULT FROM %s", column, cf.tableName)
+	return cf.getStat(stmt)
+}
+
+func (cf CsvFile) Mode(column string) (float64, error) {
+	stmt := fmt.Sprintf("SELECT %s FROM %s GROUP BY %s ORDER BY COUNT(*) DESC LIMIT 1", column, cf.tableName, column)
+	return cf.getStat(stmt)
 }

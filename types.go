@@ -1,43 +1,48 @@
 package csvdb
 
 import (
-	"database/sql"
+    "database/sql"
 )
 
-type csvFile struct {
-	Options   Options
-	FileName  string
-	database  *sql.DB
-	tableName string
+type CsvFile struct {
+    Options   Options
+    FileName  string
+    database  *sql.DB
+    tableName string
 }
 
 type Options struct {
-	DateFormat       string
-	DecimalSeparator string
-	Header           bool
-	IgnoreErrors     bool
-	RowsToRead       int64
-	Separator        string
-	SampleSize       int64
+    DateFormat       string
+    DecimalSeparator string
+    Header           bool
+    IgnoreErrors     bool
+    RowsToRead       int64
+    Separator        string
+    SampleSize       int64
 }
 
 type ColumnInfo struct {
-	Name string
-	Type string
+    Name string
+    Type string
 }
 
 type ColumnStats struct {
-	Name        string
-	Type        string
-	Minimum     any
-	Maximum     any
-	Unique      int64
-	Mean        float64
-	StandardDev float64
-	Q25         float64
-	Q50         float64
-	Q75         float64
-	Count       int64
+    Name        string
+    Type        string
+    Minimum     any
+    Maximum     any
+    Unique      int64
+    Mean        float64
+    StandardDev float64
+    Q25         float64
+    Q50         float64
+    Q75         float64
+    Count       int64
+}
+
+type KeyValue[T any] struct {
+    Key   string
+    Value T
 }
 
 // Note: important date format specifiers

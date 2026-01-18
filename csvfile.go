@@ -12,18 +12,18 @@ import (
 	"github.com/bogersw/csvdb/internal/db"
 )
 
-var duckDb *sql.DB = db.DuckDb
+var csvDb *sql.DB = db.DB
 
-func NewCsv(options Options) *csvFile {
-	return &csvFile{
+func NewCsv(options Options) *CsvFile {
+	return &CsvFile{
 		Options:   options,
 		FileName:  "",
-		database:  duckDb,
+		database:  csvDb,
 		tableName: "",
 	}
 }
 
-func (c csvFile) Read() error {
+func (c CsvFile) Read() error {
 	// Convert options to valid DuckDb options
 	options := []string{}
 	if c.Options.DateFormat != "" {
@@ -62,7 +62,7 @@ func (c csvFile) Read() error {
 	return nil
 }
 
-func (c *csvFile) SetFileName(parts ...string) error {
+func (c *CsvFile) SetFileName(parts ...string) error {
 	// Build the path and check if file exists
 	fileName := filepath.Join(parts...)
 	_, err := os.Stat(fileName)
@@ -75,7 +75,7 @@ func (c *csvFile) SetFileName(parts ...string) error {
 	return nil
 }
 
-// func (cf csvFile) query(stmt string) ([][]interface{}, error) {
+// func (cf CsvFile) query(stmt string) ([][]interface{}, error) {
 
 // 	rows, err := cf.database.Query(stmt)
 // 	if err != nil {

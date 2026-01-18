@@ -4,18 +4,20 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/marcboeker/go-duckdb"
+	_ "modernc.org/sqlite"
 )
 
-var DuckDb *sql.DB
+var DB *sql.DB
 
 func init() {
 	var err error
-	DuckDb, err = sql.Open("duckdb", "")
+	DB, err = sql.Open("sqlite", "")
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err = DuckDb.Ping(); err != nil {
+	DB.SetMaxOpenConns(10)
+	DB.SetMaxIdleConns(5)
+	if err = DB.Ping(); err != nil {
 		log.Fatal(err)
 	}
 }
